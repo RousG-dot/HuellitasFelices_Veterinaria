@@ -1,4 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="jakarta.tags.core"%>
 <!DOCTYPE html>
 <html lang="es">
     <head>
@@ -7,9 +8,14 @@
         <title>Registro de Mascota - PetSociety</title>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/registroMascota.css">
-
     </head>
     <body>
+        <c:if test="${listaClientes == null}">
+            <c:redirect url="MascotaServlet">
+                <c:param name="vista" value="registro" />
+            </c:redirect>
+        </c:if>
+
         <aside class="sidebar">
             <div class="sidebar-header">PetSociety Admin</div>
             <nav class="nav-links">
@@ -21,7 +27,7 @@
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
                     Clientes
                 </a>
-                <a href="mascotas.jsp" class="nav-link active">
+                <a href="MascotaServlet" class="nav-link active">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                     Mascotas
                 </a>
@@ -44,29 +50,43 @@
             <div class="form-card">
                 <h1 class="header-title">Registrar Paciente</h1>
                 <p class="header-subtitle">Ingrese los datos para incorporar al sistema</p>
-                
+
+                <c:if test="${param.error == 'dueno_requerido'}">
+                    <p class="header-subtitle" style="color: #d93025;">Debe seleccionar un dueño registrado.</p>
+                </c:if>
+                <c:if test="${param.error == 'dueno_invalido'}">
+                    <p class="header-subtitle" style="color: #d93025;">El dueño seleccionado no es válido.</p>
+                </c:if>
+
                 <form action="MascotaServlet" method="POST">
                     <input type="hidden" name="accion" value="registrar">
                     <div class="form-group">
                         <label>Nombre de la Mascota</label>
                         <input type="text" name="txtnombre" placeholder="Ej. Bobby" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Especie</label>
                         <input type="text" name="txtespecie" placeholder="Ej. Perro" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Raza</label>
                         <input type="text" name="txtraza" placeholder="Ej. Labrador" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Dueño</label>
-                        <input type="text" name="txtdueño" placeholder="Nombre completo" required>
+                        <select name="clienteId" required>
+                            <option value="">Seleccione un dueño</option>
+                            <c:forEach var="cliente" items="${listaClientes}">
+                                <option value="${cliente.id}">
+                                    ${cliente.nombre} ${cliente.apellido} - ${cliente.dni}
+                                </option>
+                            </c:forEach>
+                        </select>
                     </div>
-                    
+
                     <button type="submit" class="btn-primary">Guardar Mascota</button>
                 </form>
 

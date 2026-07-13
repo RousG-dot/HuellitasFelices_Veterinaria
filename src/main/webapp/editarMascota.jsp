@@ -1,4 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="jakarta.tags.core"%>
 <!DOCTYPE html>
 <html lang="es">
     <head>
@@ -7,9 +8,15 @@
         <title>Editar Mascota - PetSociety</title>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/editarMascota.css">
-
     </head>
     <body>
+        <c:if test="${mascota == null or listaClientes == null}">
+            <c:redirect url="MascotaServlet">
+                <c:param name="vista" value="editar" />
+                <c:param name="id" value="${param.id}" />
+            </c:redirect>
+        </c:if>
+
         <aside class="sidebar">
             <div class="sidebar-header">PetSociety Admin</div>
             <nav class="nav-links">
@@ -21,7 +28,7 @@
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
                     Clientes
                 </a>
-                <a href="mascotas.jsp" class="nav-link active">
+                <a href="MascotaServlet" class="nav-link active">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                     Mascotas
                 </a>
@@ -44,31 +51,54 @@
             <div class="form-card">
                 <h1 class="header-title">Editar Paciente</h1>
                 <p class="header-subtitle">Modifica los datos de la mascota en el sistema</p>
-                
+
+                <c:if test="${param.error == 'dueno_requerido'}">
+                    <p class="header-subtitle" style="color: #d93025;">Debe seleccionar un dueño registrado.</p>
+                </c:if>
+                <c:if test="${param.error == 'dueno_invalido'}">
+                    <p class="header-subtitle" style="color: #d93025;">El dueño seleccionado no es válido.</p>
+                </c:if>
+
                 <form action="MascotaServlet" method="POST">
                     <input type="hidden" name="accion" value="actualizar">
-                    <input type="hidden" name="id" value="<%= request.getParameter("id") %>">
-                    
+                    <input type="hidden" name="id" value="${mascota.id}">
+
                     <div class="form-group">
                         <label>Nombre de la Mascota</label>
-                        <input type="text" name="txtnombre" value="<%= request.getParameter("nombre") %>" required>
+                        <input type="text" name="txtnombre" value="${mascota.nombre}" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Especie</label>
-                        <input type="text" name="txtespecie" value="<%= request.getParameter("especie") %>" required>
+                        <input type="text" name="txtespecie" value="${mascota.especie}" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Raza</label>
-                        <input type="text" name="txtraza" value="<%= request.getParameter("raza") %>" required>
+                        <input type="text" name="txtraza" value="${mascota.raza}" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Dueño</label>
-                        <input type="text" name="txtdueño" value="<%= request.getParameter("dueno") %>" required>
+                        <select name="clienteId" required>
+                            <option value="">Seleccione un dueño</option>
+                            <c:forEach var="cliente" items="${listaClientes}">
+                                <c:choose>
+                                    <c:when test="${cliente.id == mascota.clienteId}">
+                                        <option value="${cliente.id}" selected>
+                                            ${cliente.nombre} ${cliente.apellido} - ${cliente.dni}
+                                        </option>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <option value="${cliente.id}">
+                                            ${cliente.nombre} ${cliente.apellido} - ${cliente.dni}
+                                        </option>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:forEach>
+                        </select>
                     </div>
-                    
+
                     <button type="submit" class="btn-primary">Guardar Cambios</button>
                 </form>
 

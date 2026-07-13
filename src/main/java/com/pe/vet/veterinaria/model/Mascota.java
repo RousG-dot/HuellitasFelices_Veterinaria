@@ -1,32 +1,29 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.pe.vet.veterinaria.model;
 
-/**
- *
- * @author minig
- */
 public class Mascota {
-   private int id;
+
+    private int id;
     private String nombre;
     private String especie;
     private String raza;
-    private String dueño;
+    private String dueno;
+    private Integer clienteId;
 
-    // Constructor vacío (obligatorio)
     public Mascota() {
     }
 
-    // Constructor con parámetros (útil para crear mascotas rápido)
-    public Mascota(int id, String nombre, String especie, String raza, String dueño) {
+    public Mascota(int id, String nombre, String especie, String raza, String dueno) {
         this.id = id;
         this.nombre = nombre;
         this.especie = especie;
         this.raza = raza;
-        this.dueño = dueño;
-    } 
+        this.dueno = dueno;
+    }
+
+    public Mascota(int id, String nombre, String especie, String raza, String dueno, Integer clienteId) {
+        this(id, nombre, especie, raza, dueno);
+        this.clienteId = clienteId;
+    }
 
     public int getId() {
         return id;
@@ -60,11 +57,19 @@ public class Mascota {
         this.raza = raza;
     }
 
-    public String getDueño() {
-        return dueño;
+    public String getDueno() {
+        return dueno;
     }
 
-    public void setDueño(String dueño) {
-        this.dueño = dueño;
+    public void setDueno(String dueno) {
+        this.dueno = dueno;
+    }
+
+    public Integer getClienteId() {
+        return clienteId;
+    }
+
+    public void setClienteId(Integer clienteId) {
+        this.clienteId = clienteId;
     }
 }

@@ -1,7 +1,5 @@
-<%@page import="com.pe.vet.veterinaria.model.Mascota"%>
-<%@page import="java.util.List"%>
-<%@page import="com.pe.vet.veterinaria.dao.MascotaDAO"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="jakarta.tags.core"%>
 <!DOCTYPE html>
 <html lang="es">
     <head>
@@ -10,9 +8,12 @@
         <title>Pacientes - PetSociety</title>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/mascotas.css">
-
     </head>
     <body>
+        <c:if test="${listaMascotas == null}">
+            <c:redirect url="MascotaServlet" />
+        </c:if>
+
         <aside class="sidebar">
             <div class="sidebar-header">PetSociety Admin</div>
             <nav class="nav-links">
@@ -23,7 +24,8 @@
                 <a href="ClienteServlet" class="nav-link">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
                     Clientes
-                <a href="mascotas.jsp" class="nav-link active">
+                </a>
+                <a href="MascotaServlet" class="nav-link active">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                     Mascotas
                 </a>
@@ -46,9 +48,9 @@
             <div class="card">
                 <div class="header-flex">
                     <h1 class="header-title">Pacientes Registrados</h1>
-                    <a href="registroMascota.jsp" class="btn-primary">Nueva Mascota</a>
+                    <a href="MascotaServlet?vista=registro" class="btn-primary">Nueva Mascota</a>
                 </div>
-                
+
                 <table>
                     <thead>
                         <tr>
@@ -61,33 +63,31 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <%
-                            MascotaDAO dao = new MascotaDAO();
-                            List<Mascota> lista = dao.listar();
-                            int contador = 1;
-                            for(Mascota m : lista) {
-                        %>
-                        <tr>
-                            <td><%= contador++ %></td>
-                            <td><%= m.getNombre() %></td>
-                            <td><%= m.getEspecie() %></td>
-                            <td><%= m.getRaza() %></td>
-                            <td><%= m.getDueño() %></td>
-                            <td>
-                                <div class="action-buttons">
-                                    <a href="editarMascota.jsp?id=<%= m.getId() %>&nombre=<%= m.getNombre() %>&especie=<%= m.getEspecie() %>&raza=<%= m.getRaza() %>&dueno=<%= m.getDueño() %>" class="btn-action btn-edit">Editar</a>
-                                    
-                                    <form action="MascotaServlet" method="POST" class="inline-form" onsubmit="return confirm('¿Estás seguro de eliminar esta mascota?')">
-                                        <input type="hidden" name="accion" value="eliminar">
-                                        <input type="hidden" name="id" value="<%= m.getId() %>">
-                                        <button type="submit" class="btn-action btn-delete">Eliminar</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        <%
-                            }
-                        %>
+                        <c:forEach var="mascota" items="${listaMascotas}" varStatus="status">
+                            <tr>
+                                <td>${status.index + 1}</td>
+                                <td>${mascota.nombre}</td>
+                                <td>${mascota.especie}</td>
+                                <td>${mascota.raza}</td>
+                                <td>${mascota.dueno}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="MascotaServlet?vista=editar&id=${mascota.id}" class="btn-action btn-edit">Editar</a>
+
+                                        <form action="MascotaServlet" method="POST" class="inline-form" onsubmit="return confirm('¿Estás seguro de eliminar esta mascota?')">
+                                            <input type="hidden" name="accion" value="eliminar">
+                                            <input type="hidden" name="id" value="${mascota.id}">
+                                            <button type="submit" class="btn-action btn-delete">Eliminar</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty listaMascotas}">
+                            <tr>
+                                <td colspan="6">No hay mascotas registradas.</td>
+                            </tr>
+                        </c:if>
                     </tbody>
                 </table>
 
