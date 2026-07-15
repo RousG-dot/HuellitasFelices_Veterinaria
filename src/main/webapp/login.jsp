@@ -6,7 +6,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Login - PetSociety</title>
+        <title>Login - Huellitas Felices</title>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/login.css">
 
@@ -15,8 +15,8 @@
         
         <div class="login-container">
             <div class="header-section">
-                <img src="img/logo.jpg" alt="PetSociety Logo"/>
-                <h1>PetSociety</h1>   
+                <img src="img/logo_hf.png" alt="PetSociety Logo"/>
+                <h1>Huellitas Felices</h1>   
                 <h2>Panel Administrativo</h2> 
             </div>
 

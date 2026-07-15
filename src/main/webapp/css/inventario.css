@@ -172,11 +172,25 @@ td {
 }
 
 button.btn-edit {
-    background-color: #93c5fd;
+    background: #eff6ff;
+    color: #2563eb;
+    border-color: #bfdbfe;
 }
 
 button.btn-delete {
-    background: #da5959;
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+button.btn-edit:hover {
+    background: #dbeafe;
+    border-color: #93c5fd;
+}
+
+button.btn-delete:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
 }
 
 .btn-action{

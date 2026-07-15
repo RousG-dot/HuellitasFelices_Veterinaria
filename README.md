@@ -98,14 +98,14 @@ El usuario administrador se autentica con BCrypt. El script SQL ya incluye un ha
 
 Credencial de prueba confirmada en el proyecto:
 
-- Correo: `admin@petsociety.com`
+- Correo: `admin@huellitasfelices.com`
 - Contrasena: `admin123`
 
 Consideraciones:
 
 - La contrasena no se guarda en texto plano en la base de datos.
 - Para una instalacion nueva, el script ya contiene el hash necesario.
-- Si se reutiliza una base anterior, el registro del usuario debe estar alineado con el hash BCrypt esperado por el sistema.
+- Si se reutiliza una base anterior, el registro del usuario debe actualizarse a `admin@huellitasfelices.com` manteniendo el mismo hash BCrypt esperado por el sistema.
 
 ## Compilacion
 

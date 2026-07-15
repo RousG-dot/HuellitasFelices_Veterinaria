@@ -5,14 +5,15 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Pacientes - PetSociety</title>
+        <title>Pacientes - Huellitas Felices</title>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/cliente.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/theme.css">
 
     </head>
     <body>
         <aside class="sidebar">
-            <div class="sidebar-header">PetSociety Admin</div>
+            <div class="sidebar-header">Huellitas Felices Admin</div>
             <nav class="nav-links">
                 <a href="${pageContext.request.contextPath}/jsf/dashboard.xhtml" class="nav-link">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3z"></path><path d="M14 3h7v4h-7z"></path><path d="M14 12h7v9h-7z"></path><path d="M3 14h7v7H3z"></path></svg>
@@ -45,7 +46,7 @@
             <div class="card">
                 <div class="header-flex">
                     <h1 class="header-title">Clientes Registrados</h1>
-                    <a href="registroCliente.jsp" class="btn-primary">Nuevo Cliente</a>
+                    <a href="registroCliente.jsp" class="btn-primary btn-create">Nuevo Cliente</a>
                 </div>
                 
                 <table>

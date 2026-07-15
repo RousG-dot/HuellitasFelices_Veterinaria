@@ -183,11 +183,92 @@
                 }
             }
         </style>
+        <link href="#{request.contextPath}/css/theme.css" rel="stylesheet" />
+        <style>
+            .sidebar {
+                background: #0E1933;
+            }
+
+            .sidebar-header {
+                color: #FFFFFF;
+                border-bottom-color: rgba(255, 255, 255, 0.12);
+            }
+
+            .nav-link {
+                color: #D7E2F2;
+            }
+
+            .nav-link:hover {
+                background: #17264A;
+                color: #FFFFFF;
+            }
+
+            .nav-link.active {
+                background: #1E3A8A;
+                color: #FFFFFF;
+                border-left-color: #10B981;
+            }
+
+            .nav-link.danger {
+                color: #FCA5A5;
+            }
+
+            .nav-link.danger:hover {
+                background: rgba(248, 113, 113, 0.12);
+                color: #F87171;
+                border-left-color: #F87171;
+            }
+
+            body,
+            .main-content {
+                background: #F9FAFB;
+            }
+
+            .title,
+            .quick-section-title {
+                color: #1F2937;
+            }
+
+            .subtitle,
+            .label,
+            .quick-link span {
+                color: #6B7280;
+            }
+
+            .metric-card,
+            .quick-link {
+                background: #FFFFFF;
+                border-color: #DDE2EA;
+            }
+
+            .quick-link {
+                color: #1F2937;
+            }
+
+            .quick-icon {
+                background: #E8EEFC;
+                color: #1E3A8A;
+            }
+
+            .quick-link:hover {
+                border-color: #1E3A8A;
+            }
+
+            .value {
+                color: #1F2937;
+            }
+
+            .quick-link:focus-visible,
+            .nav-link:focus-visible {
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
+            }
+        </style>
     </h:head>
     <h:body>
         <div class="layout">
             <aside class="sidebar">
-                <div class="sidebar-header">PetSociety Admin</div>
+                <div class="sidebar-header">Huellitas Felices Admin</div>
                 <nav class="nav-links">
                     <h:outputLink value="#{request.contextPath}/jsf/dashboard.xhtml" styleClass="nav-link active">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -246,7 +327,7 @@
             <main class="main-content">
                 <div class="header">
                     <h1 class="title">Dashboard del Sistema</h1>
-                    <p class="subtitle">Resumen general de PetSociety con acceso rapido a los modulos principales.</p>
+                    <p class="subtitle">Resumen general de Huellitas Felices con acceso rapido a los modulos principales.</p>
                 </div>
 
                 <div class="metrics">
