@@ -1,4 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="jakarta.tags.core"%>
 <!DOCTYPE html>
 <html lang="es">
     <head>
@@ -10,6 +11,10 @@
 
     </head>
     <body>
+        <c:if test="${producto == null}">
+            <c:redirect url="ProductoServlet" />
+        </c:if>
+
         <aside class="sidebar">
             <div class="sidebar-header">PetSociety Admin</div>
             <nav class="nav-links">
@@ -43,43 +48,40 @@
         <main class="main-content">
             <div class="form-card">
                 <h1 class="header-title">Editar Producto</h1>
-                <p class="header-subtitle">Modifica los datos de la mascota en el sistema</p>
+                <p class="header-subtitle">Modifica los datos del producto en el sistema</p>
+                <c:if test="${not empty error}">
+                    <p class="header-subtitle" style="color: #d93025;">${error}</p>
+                </c:if>
 
-                <form action="ProductoServlet" method="POST">
+                <form action="${pageContext.request.contextPath}/ProductoServlet" method="POST">
                     <input type="hidden" name="accion" value="actualizar">
-                    <input type="hidden" name="id" value="<%= request.getParameter("id") %>">
+                    <input type="hidden" name="id" value="${producto.id}">
 
                     <div class="form-group">
                         <label>Nombre del producto</label>
-                        <input type="text" name="txtnombre" value="<%= request.getParameter("nombre") %>" required>
+                        <input type="text" name="txtnombre" value="${producto.nombre}" required>
                     </div>
 
                     <div class="form-group">
                         <label>Precio</label>
-                        <input type="number" name="txtprecio" value="<%= request.getParameter("precio") %>" required>
+                        <input type="number" step="0.01" name="txtprecio" value="${not empty txtprecio ? txtprecio : producto.precio}" required>
                     </div>
 
                     <div class="form-group">
                         <label>Stock</label>
-                        <input type="number" name="txtstock" value="<%= request.getParameter("stock") %>" required>
+                        <input type="number" name="txtstock" value="${not empty txtstock ? txtstock : producto.stock}" required>
                     </div>
 
                     <div class="form-group">
                         <label>Categoria</label>
-                        <input type="text" name="txtcategoria" value="<%= request.getParameter("categoria") %>" required>
+                        <input type="text" name="txtcategoria" value="${producto.categoria}" required>
                     </div>
 
-                   <div class="form-group">
-                       <label>Estado</label>
-
-                       <input type="checkbox"
-                              name="txtestado"
-
-                              <%= request.getParameter("estado").equals("true")
-                              ? "checked" : "" %>>
-
-                       Disponible
-                   </div>
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <input type="checkbox" name="txtestado" ${producto.estado ? 'checked' : ''}>
+                        Disponible
+                    </div>
 
                     <button type="submit" class="btn-primary">Guardar Cambios</button>
                 </form>

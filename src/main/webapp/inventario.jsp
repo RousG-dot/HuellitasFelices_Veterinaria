@@ -1,9 +1,5 @@
-<%@ page import="java.util.List" %>
-<%@ page import="com.pe.vet.veterinaria.model.Producto" %>
-<%@ page import="com.pe.vet.veterinaria.dao.ProductoDAO" %>
-
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="jakarta.tags.core"%>
 <!DOCTYPE html>
 <html lang="es">
     <head>
@@ -14,6 +10,10 @@
         <link rel="stylesheet" href="css/inventario.css?v=2">
     </head>
     <body>
+        <c:if test="${lista == null and empty mensaje and empty param.msg}">
+            <c:redirect url="ProductoServlet" />
+        </c:if>
+
         <aside class="sidebar">
             <div class="sidebar-header">PetSociety Admin</div>
             <nav class="nav-links">
@@ -48,10 +48,22 @@
             <div class="card">
               <div class="header-flex">
                 <h1 class="header-title">Inventario</h1>
-                <button type="button"  class="btn btn-primary" onclick="window.location.href='registroInventario.jsp'">
+                <button type="button"  class="btn btn-primary" onclick="window.location.href='${pageContext.request.contextPath}/ProductoServlet?vista=registro'">
                 Nuevo Producto</button>
 
             </div>
+            <c:if test="${param.msg == 'registrado'}">
+                <p>Producto registrado correctamente.</p>
+            </c:if>
+            <c:if test="${param.msg == 'actualizado'}">
+                <p>Producto actualizado correctamente.</p>
+            </c:if>
+            <c:if test="${param.msg == 'eliminado'}">
+                <p>Producto eliminado correctamente.</p>
+            </c:if>
+            <c:if test="${not empty mensaje}">
+                <p>${mensaje}</p>
+            </c:if>
             <table>
                     <thead>
                         <tr>
@@ -65,48 +77,34 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <%
-                             ProductoDAO dao = new ProductoDAO();
-                                List<Producto> lista = dao.listar();
-                                int contador = 1;
+                        <c:forEach var="producto" items="${lista}" varStatus="status">
+                            <tr>
+                                <td>${status.count}</td>
+                                <td>${producto.nombre}</td>
+                                <td>${producto.precio}</td>
+                                <td>${producto.stock}</td>
+                                <td>${producto.categoria}</td>
+                                <td>${producto.estado ? 'Disponible' : 'Agotado'}</td>
+                                <td>
+                                    <form action="${pageContext.request.contextPath}/ProductoServlet" method="GET" class="inline-form">
+                                        <input type="hidden" name="vista" value="editar">
+                                        <input type="hidden" name="id" value="${producto.id}">
+                                        <button type="submit" class="btn-action btn-edit">Editar</button>
+                                    </form>
 
-                                for (Producto p : lista){
-
-                        %>
-                        <tr>
-                            <td><%= contador++ %></td>
-                            <td><%= p.getNombre() %></td>
-                            <td><%= p.getPrecio() %></td>
-                            <td><%= p.getStock() %></td>
-                            <td><%= p.getCategoria() %></td>
-                            <td><%= p.isEstado()? "Disponible" : "Agotado" %></td>
-
-                            <td>
-                                 <form action="editarInventario.jsp" method="GET" class="inline-form">
-
-                                     <input type="hidden" name="id" value="<%= p.getId() %>">
-                                     <input type="hidden" name="nombre" value="<%= p.getNombre() %>">
-                                     <input type="hidden" name="estado" value="<%= p.isEstado() %>">
-                                     <input type="hidden" name="precio" value="<%= p.getPrecio() %>">
-                                     <input type="hidden" name="stock" value="<%= p.getStock() %>">
-                                     <input type="hidden" name="categoria" value="<%= p.getCategoria() %>">
-
-                                     <button type="submit" class="btn-action btn-edit">Editar</button>
-                                 </form>
-
-                                 <form action="ProductoServlet" method="POST" class="inline-form" onsubmit="return confirm('¿Estás seguro de eliminar este producto?')">
-                                 <input type="hidden" name="accion" value="eliminar">
-                                 <input type="hidden" name="id" value="<%= p.getId() %>">
-                                 <button type="submit" class="btn-action btn-delete">Eliminar</button>
-                                </form>
-                               </div>
-                            </td>
-
-                        </tr>
-                        <%
-
-                            }
-                        %>
+                                    <form action="${pageContext.request.contextPath}/ProductoServlet" method="POST" class="inline-form" onsubmit="return confirm('¿Estás seguro de eliminar este producto?')">
+                                        <input type="hidden" name="accion" value="eliminar">
+                                        <input type="hidden" name="id" value="${producto.id}">
+                                        <button type="submit" class="btn-action btn-delete">Eliminar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty lista}">
+                            <tr>
+                                <td colspan="7">No hay productos registrados.</td>
+                            </tr>
+                        </c:if>
                     </tbody>
             </table>
 

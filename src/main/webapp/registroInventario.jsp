@@ -1,4 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="jakarta.tags.core"%>
 <!DOCTYPE html>
 <html lang="es">
     <head>
@@ -44,32 +45,35 @@
             <div class="form-card">
                 <h1 class="header-title">Registrar Producto</h1>
                 <p class="header-subtitle">Ingrese los datos para incorporar al sistema</p>
+                <c:if test="${not empty error}">
+                    <p class="header-subtitle" style="color: #d93025;">${error}</p>
+                </c:if>
 
-                <form action="ProductoServlet" method="POST">
+                <form action="${pageContext.request.contextPath}/ProductoServlet" method="POST">
                     <input type="hidden" name="accion" value="registrar">
                     <div class="form-group">
                         <label>Nombre del Producto</label>
-                        <input type="text" name="txtnombre" placeholder="Ej. Tarro" required>
+                        <input type="text" name="txtnombre" value="${txtnombre}" placeholder="Ej. Tarro" required>
                     </div>
 
                     <div class="form-group">
                         <label>Precio</label>
-                        <input type="number"step = "0.01" name="txtprecio" placeholder="Ej. 20.5" required>
+                        <input type="number" step="0.01" name="txtprecio" value="${txtprecio}" placeholder="Ej. 20.5" required>
                     </div>
 
                     <div class="form-group">
                         <label>Stock</label>
-                        <input type="number" name="txtstock" placeholder="Ej. 15" required>
+                        <input type="number" name="txtstock" value="${txtstock}" placeholder="Ej. 15" required>
                     </div>
 
                     <div class="form-group">
                         <label>Categoria</label>
-                        <input type="text" name="txtcategoria" placeholder="Lacteos" required>
+                        <input type="text" name="txtcategoria" value="${txtcategoria}" placeholder="Lacteos" required>
                     </div>
 
                     <div class="form-group">
                          <label>Estado</label>
-                         <input type="checkbox" name="txtestado" > Disponible
+                         <input type="checkbox" name="txtestado" ${txtestado ? 'checked' : ''}> Disponible
                     </div>
 
                     <button type="submit" class="btn-primary">Guardar Producto</button>
