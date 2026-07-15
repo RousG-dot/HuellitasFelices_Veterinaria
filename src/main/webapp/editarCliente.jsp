@@ -11,7 +11,15 @@
     </head>
     <body>
         <aside class="sidebar">
-            <div class="sidebar-header">Huellitas Felices Admin</div>
+            <div class="sidebar-header">
+                <div class="sidebar-brand">
+                    <img src="${pageContext.request.contextPath}/img/fondo_pet.png" alt="Logo de Huellitas Felices" class="sidebar-brand-logo">
+                    <div class="sidebar-brand-text">
+                        <span class="sidebar-brand-name">Huellitas Felices</span>
+                        <span class="sidebar-brand-subtitle">Panel administrativo</span>
+                    </div>
+                </div>
+            </div>
             <nav class="nav-links">
                 <a href="${pageContext.request.contextPath}/jsf/dashboard.xhtml" class="nav-link">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3z"></path><path d="M14 3h7v4h-7z"></path><path d="M14 12h7v9h-7z"></path><path d="M3 14h7v7H3z"></path></svg>

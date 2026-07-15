@@ -32,6 +32,76 @@ label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 0.9rem;
 input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-family: inherit; transition: border-color 0.2s; }
 input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1); }
 
+.availability-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 48px;
+    padding: 0 14px;
+    border: 1px solid #DDE2EA;
+    border-radius: 8px;
+    background-color: #F9FAFB;
+}
+
+.availability-text {
+    color: #1F2937;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.availability-switch {
+    position: relative;
+    display: inline-flex;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.availability-switch input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+}
+
+.availability-slider {
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background-color: #9CA3AF;
+    transition: background-color 0.2s ease;
+}
+
+.availability-slider::before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: #FFFFFF;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
+}
+
+.availability-switch input:checked + .availability-slider {
+    background-color: #10B981;
+}
+
+.availability-switch input:checked + .availability-slider::before {
+    transform: translateX(20px);
+}
+
+.availability-switch input:focus-visible + .availability-slider {
+    outline: 3px solid rgba(30, 58, 138, 0.2);
+    outline-offset: 2px;
+}
+
 .btn-primary { background: var(--primary); color: white; padding: 12px; border: none; border-radius: 6px; font-weight: 500; cursor: pointer; width: 100%; transition: background 0.2s; font-size: 1rem; margin-top: 10px; }
 .btn-primary:hover { background: var(--primary-hover); }
 

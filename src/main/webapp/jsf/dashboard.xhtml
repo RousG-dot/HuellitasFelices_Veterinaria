@@ -268,7 +268,15 @@
     <h:body>
         <div class="layout">
             <aside class="sidebar">
-                <div class="sidebar-header">Huellitas Felices Admin</div>
+                <div class="sidebar-header">
+                    <div class="sidebar-brand">
+                        <img src="#{request.contextPath}/img/fondo_pet.png" alt="Logo de Huellitas Felices" class="sidebar-brand-logo" />
+                        <div class="sidebar-brand-text">
+                            <span class="sidebar-brand-name">Huellitas Felices</span>
+                            <span class="sidebar-brand-subtitle">Panel administrativo</span>
+                        </div>
+                    </div>
+                </div>
                 <nav class="nav-links">
                     <h:outputLink value="#{request.contextPath}/jsf/dashboard.xhtml" styleClass="nav-link active">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
