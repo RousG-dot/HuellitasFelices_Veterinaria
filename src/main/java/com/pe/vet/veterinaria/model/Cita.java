@@ -6,6 +6,8 @@ package com.pe.vet.veterinaria.model;
 
 public class Cita {
     private int id;
+    private Integer clienteId;
+    private Integer mascotaId;
     private String cliente;
     private String mascota;
     private String fecha;
@@ -15,6 +17,12 @@ public class Cita {
     // Getters y setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
+
+    public Integer getClienteId() { return clienteId; }
+    public void setClienteId(Integer clienteId) { this.clienteId = clienteId; }
+
+    public Integer getMascotaId() { return mascotaId; }
+    public void setMascotaId(Integer mascotaId) { this.mascotaId = mascotaId; }
 
     public String getCliente() { return cliente; }
     public void setCliente(String cliente) { this.cliente = cliente; }

@@ -10,7 +10,7 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/registroCita.css">
     </head>
     <body>
-        <c:if test="${empty listaMascotas}">
+        <c:if test="${empty listaClientes or empty listaMascotas}">
             <c:redirect url="CitaServlet">
                 <c:param name="vista" value="registro" />
             </c:redirect>
@@ -50,7 +50,7 @@
             <div class="form-card">
                 <h1 class="header-title">${empty param.id ? 'Programar Cita Medica' : 'Editar Cita Medica'}</h1>
                 <c:if test="${param.error == 'datos_invalidos'}">
-                    <p class="header-subtitle">No se pudo guardar la cita. Verifica cliente, mascota, fecha y hora.</p>
+                    <p class="header-subtitle">No se pudo guardar la cita. Verifica cliente, mascota, fecha, hora y que la mascota pertenezca al cliente.</p>
                 </c:if>
 
                 <form action="${pageContext.request.contextPath}/CitaServlet" method="POST">
@@ -61,16 +61,23 @@
 
                     <div class="form-group">
                         <label>Cliente</label>
-                        <input type="text" name="cliente" value="${param.cliente}" placeholder="Ej. Maria Lopez" required>
+                        <select name="clienteId" required>
+                            <option value="">Seleccione un cliente</option>
+                            <c:forEach var="cliente" items="${listaClientes}">
+                                <option value="${cliente.id}" ${param.clienteId == cliente.id ? 'selected' : ''}>
+                                    ${cliente.nombre} ${cliente.apellido} - ${cliente.dni}
+                                </option>
+                            </c:forEach>
+                        </select>
                     </div>
 
                     <div class="form-group">
                         <label>Seleccionar Mascota</label>
-                        <select name="mascota" required>
+                        <select name="mascotaId" required>
                             <option value="">Seleccione una mascota</option>
                             <c:forEach var="mascota" items="${listaMascotas}">
-                                <option value="${mascota.nombre}" ${mascota.nombre == param.mascota ? 'selected' : ''}>
-                                    ${mascota.nombre} - ${mascota.especie}
+                                <option value="${mascota.id}" ${param.mascotaId == mascota.id ? 'selected' : ''}>
+                                    ${mascota.nombre} - ${mascota.dueno}
                                 </option>
                             </c:forEach>
                         </select>

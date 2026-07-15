@@ -83,8 +83,8 @@
                                         <c:url var="editarCitaUrl" value="CitaServlet">
                                             <c:param name="vista" value="registro" />
                                             <c:param name="id" value="${cita.id}" />
-                                            <c:param name="cliente" value="${cita.cliente}" />
-                                            <c:param name="mascota" value="${cita.mascota}" />
+                                            <c:param name="clienteId" value="${cita.clienteId}" />
+                                            <c:param name="mascotaId" value="${cita.mascotaId}" />
                                             <c:param name="fecha" value="${cita.fecha}" />
                                             <c:param name="hora" value="${cita.hora}" />
                                             <c:param name="motivo" value="${cita.motivo}" />

@@ -55,6 +55,33 @@ public class ClienteDAO {
         return lista;
     }
 
+    public Cliente obtenerPorId(int id) {
+        String sql = "SELECT * FROM clientes WHERE id=?";
+
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Cliente c = new Cliente();
+                    c.setId(rs.getInt("id"));
+                    c.setNombre(rs.getString("nombre"));
+                    c.setApellido(rs.getString("apellido"));
+                    c.setDni(rs.getString("dni"));
+                    c.setTelefono(rs.getString("telefono"));
+                    c.setCorreo(rs.getString("correo"));
+                    return c;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error al obtener cliente: " + e.getMessage());
+        }
+
+        return null;
+    }
+
     public boolean actualizar(Cliente c) {
         String sql = "UPDATE clientes SET nombre=?, apellido=?, dni=?, telefono=?, correo=? WHERE id=?";
         
