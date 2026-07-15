@@ -128,7 +128,7 @@ CREATE TABLE `usuarios` (
 
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-INSERT INTO `usuarios` VALUES (1,'admin@petsociety.com','admin123','ADMIN');
+INSERT INTO `usuarios` VALUES (1,'admin@petsociety.com','$2a$10$T8rM53rXretRVraI9HEVO.67bSLRbaPpP/W1paPNgx.PawlDFYXOy','ADMIN');
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 
