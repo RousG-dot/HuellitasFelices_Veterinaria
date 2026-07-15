@@ -1,9 +1,9 @@
 package com.pe.vet.veterinaria.servlet;
 
 import com.pe.vet.veterinaria.dao.ClienteDAO;
-import com.pe.vet.veterinaria.dao.MascotaDAO;
 import com.pe.vet.veterinaria.model.Cliente;
 import com.pe.vet.veterinaria.model.Mascota;
+import com.pe.vet.veterinaria.service.MascotaService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -20,6 +20,7 @@ public class MascotaServlet extends HttpServlet {
     private static final String FORM_REGISTRO = "registroMascota.jsp";
     private static final String FORM_EDICION = "editarMascota.jsp";
     private static final String LISTADO = "mascotas.jsp";
+    private final MascotaService mascotaService = new MascotaService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -45,20 +46,19 @@ public class MascotaServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String accion = request.getParameter("accion");
-        MascotaDAO mascotaDAO = new MascotaDAO();
 
         if ("registrar".equals(accion)) {
-            procesarRegistro(request, response, mascotaDAO);
+            procesarRegistro(request, response);
             return;
         }
 
         if ("actualizar".equals(accion)) {
-            procesarActualizacion(request, response, mascotaDAO);
+            procesarActualizacion(request, response);
             return;
         }
 
         if ("eliminar".equals(accion)) {
-            procesarEliminacion(request, response, mascotaDAO);
+            procesarEliminacion(request, response);
             return;
         }
 
@@ -67,8 +67,7 @@ public class MascotaServlet extends HttpServlet {
 
     private void listarMascotas(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        MascotaDAO mascotaDAO = new MascotaDAO();
-        request.setAttribute("listaMascotas", mascotaDAO.listar());
+        request.setAttribute("listaMascotas", mascotaService.listarMascotas());
         request.getRequestDispatcher(LISTADO).forward(request, response);
     }
 
@@ -94,9 +93,8 @@ public class MascotaServlet extends HttpServlet {
             return;
         }
 
-        MascotaDAO mascotaDAO = new MascotaDAO();
         ClienteDAO clienteDAO = new ClienteDAO();
-        Mascota mascota = mascotaDAO.obtenerPorId(id);
+        Mascota mascota = mascotaService.obtenerMascota(id);
 
         if (mascota == null) {
             listarMascotasConMensaje(request, response, "La mascota indicada no existe.");
@@ -121,11 +119,14 @@ public class MascotaServlet extends HttpServlet {
         request.getRequestDispatcher(FORM_EDICION).forward(request, response);
     }
 
-    private void procesarRegistro(HttpServletRequest request, HttpServletResponse response, MascotaDAO mascotaDAO)
+    private void procesarRegistro(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         try {
-            Mascota mascota = construirMascotaDesdeFormulario(request, mascotaDAO, false);
-            if (!mascotaDAO.registrar(mascota)) {
+            if (!mascotaService.registrarMascota(
+                    request.getParameter("clienteId"),
+                    request.getParameter("txtnombre"),
+                    request.getParameter("txtespecie"),
+                    request.getParameter("txtraza"))) {
                 throw new IllegalStateException("No se pudo registrar la mascota.");
             }
             response.sendRedirect("MascotaServlet?msg=registrada");
@@ -137,11 +138,15 @@ public class MascotaServlet extends HttpServlet {
         }
     }
 
-    private void procesarActualizacion(HttpServletRequest request, HttpServletResponse response, MascotaDAO mascotaDAO)
+    private void procesarActualizacion(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         try {
-            Mascota mascota = construirMascotaDesdeFormulario(request, mascotaDAO, true);
-            if (!mascotaDAO.actualizar(mascota)) {
+            if (!mascotaService.actualizarMascota(
+                    request.getParameter("id"),
+                    request.getParameter("clienteId"),
+                    request.getParameter("txtnombre"),
+                    request.getParameter("txtespecie"),
+                    request.getParameter("txtraza"))) {
                 throw new IllegalStateException("No se pudo actualizar la mascota.");
             }
             response.sendRedirect("MascotaServlet?msg=actualizada");
@@ -153,20 +158,10 @@ public class MascotaServlet extends HttpServlet {
         }
     }
 
-    private void procesarEliminacion(HttpServletRequest request, HttpServletResponse response, MascotaDAO mascotaDAO)
+    private void procesarEliminacion(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            Integer id = parsePositivo(request.getParameter("id"));
-            if (id == null) {
-                throw new IllegalArgumentException("La mascota indicada no es valida.");
-            }
-
-            Mascota mascota = mascotaDAO.obtenerPorId(id);
-            if (mascota == null) {
-                throw new IllegalArgumentException("La mascota indicada no existe.");
-            }
-
-            if (!mascotaDAO.eliminar(id)) {
+            if (!mascotaService.eliminarMascota(request.getParameter("id"))) {
                 throw new IllegalStateException("No se pudo eliminar la mascota.");
             }
 
@@ -177,57 +172,6 @@ public class MascotaServlet extends HttpServlet {
             LOGGER.log(Level.SEVERE, "Error tecnico al eliminar mascota.", e);
             listarMascotasConMensaje(request, response, "Ocurrio un problema al eliminar la mascota.");
         }
-    }
-
-    private Mascota construirMascotaDesdeFormulario(HttpServletRequest request, MascotaDAO mascotaDAO, boolean requiereId) {
-        Integer clienteId = parsePositivo(request.getParameter("clienteId"));
-        if (clienteId == null) {
-            throw new IllegalArgumentException("Seleccione un cliente valido.");
-        }
-
-        ClienteDAO clienteDAO = new ClienteDAO();
-        Cliente cliente = clienteDAO.obtenerPorId(clienteId);
-        if (cliente == null) {
-            throw new IllegalArgumentException("Seleccione un cliente valido.");
-        }
-
-        String nombre = normalizar(request.getParameter("txtnombre"));
-        if (nombre == null || nombre.isEmpty() || nombre.length() > 50) {
-            throw new IllegalArgumentException("Ingrese un nombre valido para la mascota.");
-        }
-
-        String especie = normalizar(request.getParameter("txtespecie"));
-        if (especie == null || especie.isEmpty() || especie.length() > 30) {
-            throw new IllegalArgumentException("Ingrese una especie valida.");
-        }
-
-        String raza = normalizar(request.getParameter("txtraza"));
-        if (raza != null && raza.length() > 50) {
-            throw new IllegalArgumentException("Ingrese una raza valida.");
-        }
-        if (raza != null && raza.isEmpty()) {
-            raza = null;
-        }
-
-        Mascota mascota = new Mascota();
-        if (requiereId) {
-            Integer id = parsePositivo(request.getParameter("id"));
-            if (id == null) {
-                throw new IllegalArgumentException("La mascota indicada no es valida.");
-            }
-            Mascota actual = mascotaDAO.obtenerPorId(id);
-            if (actual == null) {
-                throw new IllegalArgumentException("La mascota indicada no existe.");
-            }
-            mascota.setId(id);
-        }
-
-        mascota.setNombre(nombre);
-        mascota.setEspecie(especie);
-        mascota.setRaza(raza);
-        mascota.setClienteId(clienteId);
-        mascota.setDueno((cliente.getNombre() + " " + cliente.getApellido()).trim());
-        return mascota;
     }
 
     private void reenviarRegistroConError(HttpServletRequest request, HttpServletResponse response, String mensaje)
