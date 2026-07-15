@@ -4,11 +4,14 @@ import com.pe.vet.veterinaria.model.Cliente;
 import com.pe.vet.veterinaria.util.Conexion;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.ResultSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ClienteDAO {
+    private static final Logger LOGGER = Logger.getLogger(ClienteDAO.class.getName());
     
         public boolean registrar(Cliente c) {
         String sql = "INSERT INTO clientes (nombre, apellido, dni, telefono, correo) VALUES (?,?,?,?,?)";
@@ -26,7 +29,7 @@ public class ClienteDAO {
             return filas > 0;
             
         } catch (Exception e) {
-            System.out.println("Error al registrar cliente: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error al registrar cliente.", e);
             return false;
         }
     }
@@ -50,7 +53,7 @@ public class ClienteDAO {
                 lista.add(c);
             }
         } catch (Exception e) {
-            System.out.println("Error al listar cliente: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error al listar cliente.", e);
         }
         return lista;
     }
@@ -76,7 +79,7 @@ public class ClienteDAO {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error al obtener cliente: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error al obtener cliente.", e);
         }
 
         return null;
@@ -99,7 +102,7 @@ public class ClienteDAO {
             return filas > 0;
             
         } catch (Exception e) {
-            System.out.println("Error al actualizar cliente: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error al actualizar cliente.", e);
             return false;
         }
     }
@@ -116,7 +119,7 @@ public class ClienteDAO {
             return filas > 0;
             
         } catch (Exception e) {
-            System.out.println("Error al eliminar cliente: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error al eliminar cliente.", e);
             return false;
         }
     }
