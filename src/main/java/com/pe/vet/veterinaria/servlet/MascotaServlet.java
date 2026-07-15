@@ -11,9 +11,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @WebServlet(name = "MascotaServlet", urlPatterns = {"/MascotaServlet"})
 public class MascotaServlet extends HttpServlet {
+    private static final Logger LOGGER = Logger.getLogger(MascotaServlet.class.getName());
+    private static final String FORM_REGISTRO = "registroMascota.jsp";
+    private static final String FORM_EDICION = "editarMascota.jsp";
+    private static final String LISTADO = "mascotas.jsp";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -52,18 +58,24 @@ public class MascotaServlet extends HttpServlet {
         }
 
         if ("eliminar".equals(accion)) {
-            int id = Integer.parseInt(request.getParameter("id"));
-            mascotaDAO.eliminar(id);
+            procesarEliminacion(request, response, mascotaDAO);
+            return;
         }
 
-        response.sendRedirect("MascotaServlet");
+        listarMascotasConMensaje(request, response, "Accion no valida.");
     }
 
     private void listarMascotas(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         MascotaDAO mascotaDAO = new MascotaDAO();
         request.setAttribute("listaMascotas", mascotaDAO.listar());
-        request.getRequestDispatcher("mascotas.jsp").forward(request, response);
+        request.getRequestDispatcher(LISTADO).forward(request, response);
+    }
+
+    private void listarMascotasConMensaje(HttpServletRequest request, HttpServletResponse response, String mensaje)
+            throws ServletException, IOException {
+        request.setAttribute("mensaje", mensaje);
+        listarMascotas(request, response);
     }
 
     private void cargarFormularioRegistro(HttpServletRequest request, HttpServletResponse response)
@@ -71,23 +83,23 @@ public class MascotaServlet extends HttpServlet {
         ClienteDAO clienteDAO = new ClienteDAO();
         List<Cliente> listaClientes = clienteDAO.listar();
         request.setAttribute("listaClientes", listaClientes);
-        request.getRequestDispatcher("registroMascota.jsp").forward(request, response);
+        request.getRequestDispatcher(FORM_REGISTRO).forward(request, response);
     }
 
     private void cargarFormularioEdicion(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String idParam = request.getParameter("id");
-        if (idParam == null || idParam.trim().isEmpty()) {
-            response.sendRedirect("MascotaServlet");
+        Integer id = parsePositivo(request.getParameter("id"));
+        if (id == null) {
+            listarMascotasConMensaje(request, response, "La mascota indicada no es valida.");
             return;
         }
 
         MascotaDAO mascotaDAO = new MascotaDAO();
         ClienteDAO clienteDAO = new ClienteDAO();
-        Mascota mascota = mascotaDAO.obtenerPorId(Integer.parseInt(idParam));
+        Mascota mascota = mascotaDAO.obtenerPorId(id);
 
         if (mascota == null) {
-            response.sendRedirect("MascotaServlet");
+            listarMascotasConMensaje(request, response, "La mascota indicada no existe.");
             return;
         }
 
@@ -106,81 +118,162 @@ public class MascotaServlet extends HttpServlet {
 
         request.setAttribute("mascota", mascota);
         request.setAttribute("listaClientes", listaClientes);
-        request.getRequestDispatcher("editarMascota.jsp").forward(request, response);
+        request.getRequestDispatcher(FORM_EDICION).forward(request, response);
     }
 
     private void procesarRegistro(HttpServletRequest request, HttpServletResponse response, MascotaDAO mascotaDAO)
-            throws IOException {
-        String nombre = request.getParameter("txtnombre");
-        String especie = request.getParameter("txtespecie");
-        String raza = request.getParameter("txtraza");
-        String clienteIdParam = request.getParameter("clienteId");
-
-        Integer clienteId = parseClienteId(clienteIdParam);
-        if (clienteId == null) {
-            response.sendRedirect("MascotaServlet?vista=registro&error=dueno_requerido");
-            return;
+            throws IOException, ServletException {
+        try {
+            Mascota mascota = construirMascotaDesdeFormulario(request, mascotaDAO, false);
+            if (!mascotaDAO.registrar(mascota)) {
+                throw new IllegalStateException("No se pudo registrar la mascota.");
+            }
+            response.sendRedirect("MascotaServlet?msg=registrada");
+        } catch (IllegalArgumentException e) {
+            reenviarRegistroConError(request, response, e.getMessage());
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error tecnico al registrar mascota.", e);
+            reenviarRegistroConError(request, response, "Ocurrio un problema al registrar la mascota.");
         }
-
-        String nombreCompletoDueno = mascotaDAO.obtenerNombreCompletoCliente(clienteId);
-        if (nombreCompletoDueno == null || nombreCompletoDueno.trim().isEmpty()) {
-            response.sendRedirect("MascotaServlet?vista=registro&error=dueno_invalido");
-            return;
-        }
-
-        Mascota mascota = new Mascota();
-        mascota.setNombre(nombre);
-        mascota.setEspecie(especie);
-        mascota.setRaza(raza);
-        mascota.setClienteId(clienteId);
-        mascota.setDueno(nombreCompletoDueno);
-        mascotaDAO.registrar(mascota);
-
-        response.sendRedirect("MascotaServlet");
     }
 
     private void procesarActualizacion(HttpServletRequest request, HttpServletResponse response, MascotaDAO mascotaDAO)
-            throws IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
-        String nombre = request.getParameter("txtnombre");
-        String especie = request.getParameter("txtespecie");
-        String raza = request.getParameter("txtraza");
-        String clienteIdParam = request.getParameter("clienteId");
+            throws IOException, ServletException {
+        try {
+            Mascota mascota = construirMascotaDesdeFormulario(request, mascotaDAO, true);
+            if (!mascotaDAO.actualizar(mascota)) {
+                throw new IllegalStateException("No se pudo actualizar la mascota.");
+            }
+            response.sendRedirect("MascotaServlet?msg=actualizada");
+        } catch (IllegalArgumentException e) {
+            reenviarEdicionConError(request, response, e.getMessage());
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error tecnico al actualizar mascota.", e);
+            reenviarEdicionConError(request, response, "Ocurrio un problema al actualizar la mascota.");
+        }
+    }
 
-        Integer clienteId = parseClienteId(clienteIdParam);
+    private void procesarEliminacion(HttpServletRequest request, HttpServletResponse response, MascotaDAO mascotaDAO)
+            throws ServletException, IOException {
+        try {
+            Integer id = parsePositivo(request.getParameter("id"));
+            if (id == null) {
+                throw new IllegalArgumentException("La mascota indicada no es valida.");
+            }
+
+            Mascota mascota = mascotaDAO.obtenerPorId(id);
+            if (mascota == null) {
+                throw new IllegalArgumentException("La mascota indicada no existe.");
+            }
+
+            if (!mascotaDAO.eliminar(id)) {
+                throw new IllegalStateException("No se pudo eliminar la mascota.");
+            }
+
+            response.sendRedirect("MascotaServlet?msg=eliminada");
+        } catch (IllegalArgumentException e) {
+            listarMascotasConMensaje(request, response, e.getMessage());
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error tecnico al eliminar mascota.", e);
+            listarMascotasConMensaje(request, response, "Ocurrio un problema al eliminar la mascota.");
+        }
+    }
+
+    private Mascota construirMascotaDesdeFormulario(HttpServletRequest request, MascotaDAO mascotaDAO, boolean requiereId) {
+        Integer clienteId = parsePositivo(request.getParameter("clienteId"));
         if (clienteId == null) {
-            response.sendRedirect("MascotaServlet?vista=editar&id=" + id + "&error=dueno_requerido");
-            return;
+            throw new IllegalArgumentException("Seleccione un cliente valido.");
         }
 
-        String nombreCompletoDueno = mascotaDAO.obtenerNombreCompletoCliente(clienteId);
-        if (nombreCompletoDueno == null || nombreCompletoDueno.trim().isEmpty()) {
-            response.sendRedirect("MascotaServlet?vista=editar&id=" + id + "&error=dueno_invalido");
-            return;
+        ClienteDAO clienteDAO = new ClienteDAO();
+        Cliente cliente = clienteDAO.obtenerPorId(clienteId);
+        if (cliente == null) {
+            throw new IllegalArgumentException("Seleccione un cliente valido.");
+        }
+
+        String nombre = normalizar(request.getParameter("txtnombre"));
+        if (nombre == null || nombre.isEmpty() || nombre.length() > 50) {
+            throw new IllegalArgumentException("Ingrese un nombre valido para la mascota.");
+        }
+
+        String especie = normalizar(request.getParameter("txtespecie"));
+        if (especie == null || especie.isEmpty() || especie.length() > 30) {
+            throw new IllegalArgumentException("Ingrese una especie valida.");
+        }
+
+        String raza = normalizar(request.getParameter("txtraza"));
+        if (raza != null && raza.length() > 50) {
+            throw new IllegalArgumentException("Ingrese una raza valida.");
+        }
+        if (raza != null && raza.isEmpty()) {
+            raza = null;
         }
 
         Mascota mascota = new Mascota();
-        mascota.setId(id);
+        if (requiereId) {
+            Integer id = parsePositivo(request.getParameter("id"));
+            if (id == null) {
+                throw new IllegalArgumentException("La mascota indicada no es valida.");
+            }
+            Mascota actual = mascotaDAO.obtenerPorId(id);
+            if (actual == null) {
+                throw new IllegalArgumentException("La mascota indicada no existe.");
+            }
+            mascota.setId(id);
+        }
+
         mascota.setNombre(nombre);
         mascota.setEspecie(especie);
         mascota.setRaza(raza);
         mascota.setClienteId(clienteId);
-        mascota.setDueno(nombreCompletoDueno);
-        mascotaDAO.actualizar(mascota);
-
-        response.sendRedirect("MascotaServlet");
+        mascota.setDueno((cliente.getNombre() + " " + cliente.getApellido()).trim());
+        return mascota;
     }
 
-    private Integer parseClienteId(String clienteIdParam) {
-        if (clienteIdParam == null || clienteIdParam.trim().isEmpty()) {
+    private void reenviarRegistroConError(HttpServletRequest request, HttpServletResponse response, String mensaje)
+            throws ServletException, IOException {
+        request.setAttribute("error", mensaje);
+        request.setAttribute("txtnombre", request.getParameter("txtnombre"));
+        request.setAttribute("txtespecie", request.getParameter("txtespecie"));
+        request.setAttribute("txtraza", request.getParameter("txtraza"));
+        request.setAttribute("clienteId", request.getParameter("clienteId"));
+        cargarFormularioRegistro(request, response);
+    }
+
+    private void reenviarEdicionConError(HttpServletRequest request, HttpServletResponse response, String mensaje)
+            throws ServletException, IOException {
+        ClienteDAO clienteDAO = new ClienteDAO();
+        Mascota mascota = new Mascota();
+        Integer id = parsePositivo(request.getParameter("id"));
+        if (id != null) {
+            mascota.setId(id);
+        }
+        mascota.setNombre(request.getParameter("txtnombre"));
+        mascota.setEspecie(request.getParameter("txtespecie"));
+        mascota.setRaza(request.getParameter("txtraza"));
+        mascota.setClienteId(parsePositivo(request.getParameter("clienteId")));
+
+        request.setAttribute("error", mensaje);
+        request.setAttribute("mascota", mascota);
+        request.setAttribute("listaClientes", clienteDAO.listar());
+        request.getRequestDispatcher(FORM_EDICION).forward(request, response);
+    }
+
+    private Integer parsePositivo(String valor) {
+        String valorNormalizado = normalizar(valor);
+        if (valorNormalizado == null || valorNormalizado.isEmpty()) {
             return null;
         }
 
         try {
-            int clienteId = Integer.parseInt(clienteIdParam);
-            return clienteId > 0 ? clienteId : null;
+            int numero = Integer.parseInt(valorNormalizado);
+            return numero > 0 ? numero : null;
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    private String normalizar(String valor) {
+        return valor == null ? null : valor.trim();
     }
 }

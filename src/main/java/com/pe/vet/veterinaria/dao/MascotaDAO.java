@@ -8,8 +8,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MascotaDAO {
+    private static final Logger LOGGER = Logger.getLogger(MascotaDAO.class.getName());
 
     public boolean registrar(Mascota mascota) {
         boolean usaClienteId = existeColumnaClienteId();
@@ -31,7 +34,7 @@ public class MascotaDAO {
 
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
-            System.out.println("Error al registrar mascota: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error al registrar mascota.", e);
             return false;
         }
     }
@@ -51,7 +54,7 @@ public class MascotaDAO {
                 lista.add(mapearMascota(rs, usaClienteId));
             }
         } catch (Exception e) {
-            System.out.println("Error al listar mascotas: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error al listar mascotas.", e);
         }
         return lista;
     }
@@ -73,7 +76,7 @@ public class MascotaDAO {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error al obtener mascota: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error al obtener mascota.", e);
         }
 
         return null;
@@ -102,7 +105,7 @@ public class MascotaDAO {
 
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
-            System.out.println("Error al actualizar mascota: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error al actualizar mascota.", e);
             return false;
         }
     }
@@ -116,7 +119,7 @@ public class MascotaDAO {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
-            System.out.println("Error al eliminar mascota: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error al eliminar mascota.", e);
             return false;
         }
     }
@@ -132,7 +135,7 @@ public class MascotaDAO {
                 return rs.next();
             }
         } catch (Exception e) {
-            System.out.println("No se pudo validar la columna cliente_id: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "No se pudo validar la columna cliente_id.", e);
             return false;
         }
     }
@@ -153,7 +156,7 @@ public class MascotaDAO {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error al obtener dueño de mascota: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error al obtener dueño de mascota.", e);
         }
 
         return null;

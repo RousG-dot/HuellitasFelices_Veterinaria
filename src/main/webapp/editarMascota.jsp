@@ -52,14 +52,11 @@
                 <h1 class="header-title">Editar Paciente</h1>
                 <p class="header-subtitle">Modifica los datos de la mascota en el sistema</p>
 
-                <c:if test="${param.error == 'dueno_requerido'}">
-                    <p class="header-subtitle" style="color: #d93025;">Debe seleccionar un dueño registrado.</p>
-                </c:if>
-                <c:if test="${param.error == 'dueno_invalido'}">
-                    <p class="header-subtitle" style="color: #d93025;">El dueño seleccionado no es válido.</p>
+                <c:if test="${not empty error}">
+                    <p class="header-subtitle" style="color: #d93025;">${error}</p>
                 </c:if>
 
-                <form action="MascotaServlet" method="POST">
+                <form action="${pageContext.request.contextPath}/MascotaServlet" method="POST">
                     <input type="hidden" name="accion" value="actualizar">
                     <input type="hidden" name="id" value="${mascota.id}">
 

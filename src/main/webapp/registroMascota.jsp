@@ -51,28 +51,25 @@
                 <h1 class="header-title">Registrar Paciente</h1>
                 <p class="header-subtitle">Ingrese los datos para incorporar al sistema</p>
 
-                <c:if test="${param.error == 'dueno_requerido'}">
-                    <p class="header-subtitle" style="color: #d93025;">Debe seleccionar un dueño registrado.</p>
-                </c:if>
-                <c:if test="${param.error == 'dueno_invalido'}">
-                    <p class="header-subtitle" style="color: #d93025;">El dueño seleccionado no es válido.</p>
+                <c:if test="${not empty error}">
+                    <p class="header-subtitle" style="color: #d93025;">${error}</p>
                 </c:if>
 
-                <form action="MascotaServlet" method="POST">
+                <form action="${pageContext.request.contextPath}/MascotaServlet" method="POST">
                     <input type="hidden" name="accion" value="registrar">
                     <div class="form-group">
                         <label>Nombre de la Mascota</label>
-                        <input type="text" name="txtnombre" placeholder="Ej. Bobby" required>
+                        <input type="text" name="txtnombre" value="${txtnombre}" placeholder="Ej. Bobby" required>
                     </div>
 
                     <div class="form-group">
                         <label>Especie</label>
-                        <input type="text" name="txtespecie" placeholder="Ej. Perro" required>
+                        <input type="text" name="txtespecie" value="${txtespecie}" placeholder="Ej. Perro" required>
                     </div>
 
                     <div class="form-group">
                         <label>Raza</label>
-                        <input type="text" name="txtraza" placeholder="Ej. Labrador" required>
+                        <input type="text" name="txtraza" value="${txtraza}" placeholder="Ej. Labrador" required>
                     </div>
 
                     <div class="form-group">
@@ -80,7 +77,7 @@
                         <select name="clienteId" required>
                             <option value="">Seleccione un dueño</option>
                             <c:forEach var="cliente" items="${listaClientes}">
-                                <option value="${cliente.id}">
+                                <option value="${cliente.id}" ${clienteId == cliente.id ? 'selected' : ''}>
                                     ${cliente.nombre} ${cliente.apellido} - ${cliente.dni}
                                 </option>
                             </c:forEach>

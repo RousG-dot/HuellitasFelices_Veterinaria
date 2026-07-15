@@ -50,6 +50,18 @@
                     <h1 class="header-title">Pacientes Registrados</h1>
                     <a href="MascotaServlet?vista=registro" class="btn-primary">Nueva Mascota</a>
                 </div>
+                <c:if test="${param.msg == 'registrada'}">
+                    <p>Mascota registrada correctamente.</p>
+                </c:if>
+                <c:if test="${param.msg == 'actualizada'}">
+                    <p>Mascota actualizada correctamente.</p>
+                </c:if>
+                <c:if test="${param.msg == 'eliminada'}">
+                    <p>Mascota eliminada correctamente.</p>
+                </c:if>
+                <c:if test="${not empty mensaje}">
+                    <p>${mensaje}</p>
+                </c:if>
 
                 <table>
                     <thead>
