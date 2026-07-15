@@ -40,7 +40,8 @@ public class AuthFilter extends HttpFilter implements Filter {
             return true;
         }
 
-        if ("/index.jsp".equals(path) || "/login.jsp".equals(path) || "/LoginServlet".equals(path)) {
+        if ("/index.jsp".equals(path) || "/login.jsp".equals(path)
+                || "/LoginServlet".equals(path) || "/LogoutServlet".equals(path)) {
             return true;
         }
 
