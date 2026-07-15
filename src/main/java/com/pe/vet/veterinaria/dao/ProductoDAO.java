@@ -5,11 +5,13 @@ import com.pe.vet.veterinaria.util.Conexion;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ProductoDAO {
+        private static final Logger LOGGER = Logger.getLogger(ProductoDAO.class.getName());
 
         public List<Producto> listar() {
             List<Producto> lista = new ArrayList<>();
@@ -32,12 +34,37 @@ public class ProductoDAO {
                 }
 
             } catch (Exception e){
-
-                e.printStackTrace();
-
+                LOGGER.log(Level.SEVERE, "Error al listar productos.", e);
             }
             return lista;
 
+        }
+
+        public Producto obtenerPorId(int id) {
+            String sql = "SELECT * FROM productos WHERE id=?";
+
+            try (Connection con = Conexion.getConexion();
+                 PreparedStatement ps = con.prepareStatement(sql)) {
+
+                ps.setInt(1, id);
+
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        Producto p = new Producto();
+                        p.setId(rs.getInt("id"));
+                        p.setNombre(rs.getString("nombre"));
+                        p.setPrecio(rs.getDouble("precio"));
+                        p.setStock(rs.getInt("stock"));
+                        p.setCategoria(rs.getString("categoria"));
+                        p.setEstado(rs.getBoolean("estado"));
+                        return p;
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Error al obtener producto.", e);
+            }
+
+            return null;
         }
 
         public boolean registrar(Producto p){
@@ -57,7 +84,7 @@ public class ProductoDAO {
                 return ps.executeUpdate()>0;
 
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Error al registrar producto.", e);
                 return false;
             }
         }
@@ -80,7 +107,7 @@ public class ProductoDAO {
                 return ps.executeUpdate()>0;
 
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Error al actualizar producto.", e);
                 return false;
             }
     }
@@ -101,7 +128,7 @@ public class ProductoDAO {
 
 
                 } catch (Exception e) {
-                System.out.println("Error al elimnar producto: " + e.getMessage());
+                LOGGER.log(Level.SEVERE, "Error al eliminar producto.", e);
                 return false;
              }
             }
