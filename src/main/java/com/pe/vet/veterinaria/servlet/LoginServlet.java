@@ -14,28 +14,43 @@ import jakarta.servlet.http.HttpSession;
 public class LoginServlet extends HttpServlet {
 
     @Override
-  
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+
+        if (session != null && session.getAttribute("usuarioLogueado") != null) {
+            response.sendRedirect(request.getContextPath() + "/jsf/dashboard.xhtml");
+            return;
+        }
+
+        request.getRequestDispatcher("/login.jsp").forward(request, response);
+    }
+
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        // 1. Recibimos los datos del formulario
         String email = request.getParameter("txtemail");
         String password = request.getParameter("txtpass");
+        String correo = email == null ? "" : email.trim();
 
-        // 2. Usamos el DAO para validar contra la BD
+        if (correo.isEmpty() || password == null || password.trim().isEmpty()) {
+            request.setAttribute("error", "Ingrese correo y contraseña.");
+            request.setAttribute("correoIngresado", correo);
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            return;
+        }
+
         UsuarioDAO dao = new UsuarioDAO();
-        Usuario user = dao.validar(email, password);
+        Usuario user = dao.validar(correo, password);
 
-        // 3. Lógica de acceso
         if (user != null) {
-            // SI DATOS CORRECTOS: Creamos sesión y vamos al dashboard
             HttpSession session = request.getSession();
             session.setAttribute("usuarioLogueado", user);
             response.sendRedirect(request.getContextPath() + "/jsf/dashboard.xhtml");
         } else {
-            // SI DATOS INCORRECTOS: Enviamos mensaje de error al login
-            request.setAttribute("error", "Correo o contraseña incorrectos");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+            request.setAttribute("error", "Correo o contraseña incorrectos.");
+            request.setAttribute("correoIngresado", correo);
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
         }
     }
 }

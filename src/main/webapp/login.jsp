@@ -1,4 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="jakarta.tags.core"%>
+<%@taglib prefix="fn" uri="jakarta.tags.functions"%>
 <!DOCTYPE html>
 <html lang="es">
     <head>
@@ -17,11 +19,15 @@
                 <h1>PetSociety</h1>   
                 <h2>Panel Administrativo</h2> 
             </div>
+
+            <c:if test="${not empty error}">
+                <p class="error-message"><c:out value="${error}" /></p>
+            </c:if>
             
-            <form method="POST" action="LoginServlet">
+            <form method="POST" action="${pageContext.request.contextPath}/LoginServlet">
                 <div class="form-group">
                     <label>Correo Electrónico</label>
-                    <input type="email" name="txtemail" placeholder="usuario@petsociety.com" required>
+                    <input type="email" name="txtemail" value="${fn:escapeXml(correoIngresado)}" placeholder="usuario@petsociety.com" required>
                 </div>
                 
                 <div class="form-group">
