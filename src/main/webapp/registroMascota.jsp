@@ -83,14 +83,16 @@
 
                     <div class="form-group">
                         <label>Dueño</label>
-                        <select name="clienteId" required>
+                        <select name="clienteId" class="owner-select" required>
                             <option value="">Seleccione un dueño</option>
+
                             <c:forEach var="cliente" items="${listaClientes}">
-                                <option value="${cliente.id}" ${clienteId == cliente.id ? 'selected' : ''}>
+                                <option value="${cliente.id}">
                                     ${cliente.nombre} ${cliente.apellido} - ${cliente.dni}
                                 </option>
                             </c:forEach>
                         </select>
+                       
                     </div>
 
                     <button type="submit" class="btn-primary">Guardar Mascota</button>

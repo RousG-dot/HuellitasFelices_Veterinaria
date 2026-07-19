@@ -58,3 +58,28 @@ input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px
     background: #f0fdfa;
     transform: translateX(-4px);
 }
+
+.owner-select {
+    width: 100%;
+    min-height: 46px;
+    padding: 0 42px 0 14px;
+    background-color: #FFFFFF;
+    color: #1F2937;
+    border: 1px solid #DDE2EA;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 15px;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.owner-select:hover {
+    border-color: #B8C1D9;
+}
+
+.owner-select:focus {
+    border-color: #1E3A8A;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
+}
